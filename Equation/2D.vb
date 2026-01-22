@@ -1,3 +1,4 @@
+Imports System.Math
 Public Class TwoDSchrodingerSolver
     Private dx, dy As Double
     Private x_min, x_max, y_min, y_max As Double
@@ -25,7 +26,7 @@ Public Class TwoDSchrodingerSolver
                 Dim y As Double = y_min + j * dy
                 
                 psi(i, j) = New Complex(
-                    Math.Exp(-(x * x + y * y) / 2),
+                    Exp(-(x * x + y * y) / 2),
                     0
                 )
             Next
@@ -44,7 +45,7 @@ Public Class TwoDSchrodingerSolver
             Next
         Next
         
-        Dim norm As Double = Math.Sqrt(normSquared)
+        Dim norm As Double = Sqrt(normSquared)
         
         If norm > 0 Then
             For i As Integer = 0 To Nx - 1
@@ -65,19 +66,19 @@ Public Class HydrogenWaveFunctions
                                             theta As Double, phi As Double) As Complex
         Select Case l
             Case 0 ' s轨道
-                Return New Complex(1 / Math.Sqrt(4 * Math.PI), 0)
+                Return New Complex(1 / Sqrt(4 * PI), 0)
                 
             Case 1 ' p轨道
                 Select Case m
                     Case 0
-                        Return New Complex(Math.Sqrt(3 / (4 * Math.PI)) * Math.Cos(theta), 0)
+                        Return New Complex(Sqrt(3 / (4 * PI)) * Cos(theta), 0)
                     Case 1
-                        Dim value As Double = -Math.Sqrt(3 / (8 * Math.PI)) * Math.Sin(theta) * 
-                                             Math.Cos(phi)
+                        Dim value As Double = -Sqrt(3 / (8 * PI)) * Sin(theta) * 
+                                             Cos(phi)
                         Return New Complex(value, 0)
                     Case -1
-                        Dim value As Double = Math.Sqrt(3 / (8 * Math.PI)) * Math.Sin(theta) * 
-                                             Math.Sin(phi)
+                        Dim value As Double = Sqrt(3 / (8 * PI)) * Sin(theta) * 
+                                             Sin(phi)
                         Return New Complex(value, 0)
                 End Select
         End Select
@@ -91,16 +92,16 @@ Public Class HydrogenWaveFunctions
         
         Select Case n
             Case 1 ' 1s轨道
-                Return 2 * Math.Exp(-r / a0) / Math.Sqrt(a0 ^ 3)
+                Return 2 * Exp(-r / a0) / Sqrt(a0 ^ 3)
                 
             Case 2
                 Select Case l
                     Case 0 ' 2s轨道
-                        Return (1 / Math.Sqrt(8 * a0 ^ 3)) * 
-                               (2 - r / a0) * Math.Exp(-r / (2 * a0))
+                        Return (1 / Sqrt(8 * a0 ^ 3)) * 
+                               (2 - r / a0) * Exp(-r / (2 * a0))
                     Case 1 ' 2p轨道
-                        Return (1 / Math.Sqrt(24 * a0 ^ 3)) * 
-                               (r / a0) * Math.Exp(-r / (2 * a0))
+                        Return (1 / Sqrt(24 * a0 ^ 3)) * 
+                               (r / a0) * Exp(-r / (2 * a0))
                 End Select
         End Select
         
@@ -115,4 +116,5 @@ Public Class HydrogenWaveFunctions
         
         Return radial * angular
     End Function
+
 End Class
