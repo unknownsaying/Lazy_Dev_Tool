@@ -4,7 +4,7 @@ Imports System.Windows.Forms
 Imports System.Windows.Forms.DataVisualization.Charting
 Imports System.Drawing
 Imports System.Threading.Tasks
-
+Imports System.Math
 ' ============================================
 ' 物理常数类
 ' ============================================
@@ -81,7 +81,7 @@ Public Class OneDSchrodingerSolver
                 If i = j Then
                     Dim x As Double = x_min + i * dx
                     H(i, j) = hbar ^ 2 / (m * dx ^ 2) + potential(x)
-                ElseIf Math.Abs(i - j) = 1 Then
+                ElseIf Abs(i - j) = 1 Then
                     H(i, j) = -hbar ^ 2 / (2 * m * dx ^ 2)
                 Else
                     H(i, j) = 0
@@ -197,7 +197,7 @@ Public Class OneDSchrodingerSolver
                 Next
                 
                 ' 归一化
-                Dim norm As Double = Math.Sqrt(w.Select(Function(x) x * x).Sum())
+                Dim norm As Double = Sqrt(w.Select(Function(x) x * x).Sum())
                 For i As Integer = 0 To N - 1
                     v(i) = w(i) / norm
                 Next
@@ -238,7 +238,7 @@ Public Class OneDSchrodingerSolver
             normSquared += psi(i).MagnitudeSquared() * dx
         Next
         
-        Dim norm As Double = Math.Sqrt(normSquared)
+        Dim norm As Double = Sqrt(normSquared)
         
         If norm > 0 Then
             For i As Integer = 0 To N - 1
@@ -322,7 +322,7 @@ Public Class PotentialFunctions
     
     ' 有限深方势阱
     Public Shared Function FiniteSquareWell(x As Double, width As Double, depth As Double) As Double
-        If Math.Abs(x) < width / 2 Then
+        If Abs(x) < width / 2 Then
             Return 0
         Else
             Return depth
@@ -331,7 +331,7 @@ Public Class PotentialFunctions
     
     ' 库仑势（氢原子）
     Public Shared Function CoulombPotential(x As Double) As Double
-        Dim r As Double = Math.Abs(x)
+        Dim r As Double = Abs(x)
         If r < 0.001 Then
             r = 0.001
         End If
@@ -484,7 +484,7 @@ Public Class QuantumVisualizer
         ' 添加波函数（前3个本征态）
         Dim colors() As Color = {Color.Red, Color.Green, Color.Blue, Color.Cyan, Color.Magenta}
         
-        For stateIndex As Integer = 0 To Math.Min(2, currentStates.Count - 1)
+        For stateIndex As Integer = 0 To Min(2, currentStates.Count - 1)
             Dim state = currentStates(stateIndex)
             Dim seriesPsi As New Series($"ψ{stateIndex + 1} (E={state.Energy:F3})")
             seriesPsi.ChartType = SeriesChartType.Line
@@ -551,11 +551,11 @@ Public Class QuantumVisualizer
             superposition(i) = Complex.Zero
             
             ' 叠加不同本征态，相位随时间变化
-            For stateIndex As Integer = 0 To Math.Min(2, currentStates.Count - 1)
+            For stateIndex As Integer = 0 To Min(2, currentStates.Count - 1)
                 Dim state = currentStates(stateIndex)
                 Dim phase As Double = (state.Energy - baseEnergy) * timeStep * 0.1
                 superposition(i) += state.WaveFunction.Values(i) * 
-                                   New Complex(Math.Cos(phase), Math.Sin(phase)) * 
+                                   New Complex(Cos(phase), Sin(phase)) * 
                                    (1.0 / (stateIndex + 1))
             Next
         Next
@@ -626,4 +626,5 @@ Module MainModule
         Application.SetCompatibleTextRenderingDefault(False)
         Application.Run(New QuantumVisualizer())
     End Sub
+
 End Module
