@@ -5,6 +5,7 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.Windows.Forms
 Imports System.Drawing
+Imports System.Math
 
 ' ============================================
 ' 费曼路径积分核心类
@@ -29,7 +30,7 @@ Public Class FeynmanPathIntegral
         End Sub
         
         Public Function Length() As Integer
-            Return Math.Min(TimePoints.Count, PositionPoints.Count)
+            Return Min(TimePoints.Count, PositionPoints.Count)
         End Function
         
         Public Overrides Function ToString() As String
@@ -80,9 +81,9 @@ Public Class FeynmanPathIntegral
                 For k As Integer = 0 To config.SpacePoints - 1
                     Dim x As Double = config.Xmin + k * dx
                     Dim action As Double = CalculateEuclideanAction(x_i, x_f, x, dt)
-                    propagator += Math.Exp(-action / hbar) * dx
+                    propagator += Exp(-action / hbar) * dx
                 Next
-                propagator *= Math.Sqrt(m / (2 * Math.PI * hbar * dt))
+                propagator *= Sqrt(m / (2 * PI * hbar * dt))
             Else
                 ' 实时（量子力学）
                 For k As Integer = 0 To config.SpacePoints - 1
@@ -90,7 +91,7 @@ Public Class FeynmanPathIntegral
                     Dim action As Double = CalculateAction(x_i, x_f, x, dt)
                     propagator += Complex.Exp(Complex.ImaginaryOne * action / hbar) * dx
                 Next
-                propagator *= Complex.Sqrt(New Complex(m / (2 * Math.PI * hbar * dt), 0))
+                propagator *= Complex.Sqrt(New Complex(m / (2 * PI * hbar * dt), 0))
             End If
             
             Return propagator
@@ -113,7 +114,7 @@ Public Class FeynmanPathIntegral
                 
                 Dim weight As Complex
                 If config.UseImaginaryTime Then
-                    weight = Math.Exp(-action / hbar)
+                    weight = Exp(-action / hbar)
                 Else
                     weight = Complex.Exp(Complex.ImaginaryOne * action / hbar)
                 End If
@@ -129,7 +130,7 @@ Public Class FeynmanPathIntegral
             
             ' 归一化并计算传播子
             Dim propagator As Complex = sumWeights / numPaths
-            Dim normalization As Double = Math.Sqrt(m / (2 * Math.PI * hbar * config.TimeTotal))
+            Dim normalization As Double = Sqrt(m / (2 * PI * hbar * config.TimeTotal))
             propagator *= normalization
             
             Return (propagator, paths)
@@ -151,11 +152,11 @@ Public Class FeynmanPathIntegral
                 Dim action As Double = CalculateDirectAction(x_start, x_end, dt)
                 
                 If config.UseImaginaryTime Then
-                    Return Math.Exp(-action / hbar) * 
-                           Math.Sqrt(m / (2 * Math.PI * hbar * dt))
+                    Return Exp(-action / hbar) * 
+                           Sqrt(m / (2 * PI * hbar * dt))
                 Else
                     Return Complex.Exp(Complex.ImaginaryOne * action / hbar) * 
-                           Complex.Sqrt(New Complex(m / (2 * Math.PI * hbar * dt), 0))
+                           Complex.Sqrt(New Complex(m / (2 * PI * hbar * dt), 0))
                 End If
             End If
             
@@ -255,7 +256,7 @@ Public Class FeynmanPathIntegral
             
             ' 随机生成中间点（布朗桥）
             Dim currentX As Double = x_i
-            Dim sigma As Double = Math.Sqrt(hbar * dt / m) ' 量子涨落尺度
+            Dim sigma As Double = Sqrt(hbar * dt / m) ' 量子涨落尺度
             
             For i As Integer = 1 To numSlices - 1
                 Dim t As Double = i * dt
@@ -269,7 +270,7 @@ Public Class FeynmanPathIntegral
                 currentX = 0.7 * currentX + 0.3 * classicalPath
                 
                 ' 边界约束
-                currentX = Math.Max(config.Xmin, Math.Min(config.Xmax, currentX))
+                currentX = Max(config.Xmin, Min(config.Xmax, currentX))
                 
                 times.Add(t)
                 positions.Add(currentX)
@@ -324,7 +325,7 @@ Public Class FeynmanPathIntegral
         Public Shared Function FiniteSquareWell(x As Double, 
                                                Optional width As Double = 5.0, 
                                                Optional depth As Double = 10.0) As Double
-            If Math.Abs(x) < width / 2 Then
+            If Abs(x) < width / 2 Then
                 Return 0
             Else
                 Return depth
@@ -333,15 +334,15 @@ Public Class FeynmanPathIntegral
         
         ' 周期势（晶格）
         Public Shared Function PeriodicPotential(x As Double, 
-                                                Optional period As Double = 2 * Math.PI, 
+                                                Optional period As Double = 2 * PI, 
                                                 Optional amplitude As Double = 1.0) As Double
-            Return amplitude * (1 - Math.Cos(2 * Math.PI * x / period))
+            Return amplitude * (1 - Cos(2 * PI * x / period))
         End Function
         
         ' 库仑势
         Public Shared Function CoulombPotential(x As Double, 
                                                Optional charge As Double = 1.0) As Double
-            Dim r As Double = Math.Abs(x)
+            Dim r As Double = Abs(x)
             If r < 1e-10 Then r = 1e-10
             Return -charge / r
         End Function
@@ -352,7 +353,7 @@ Public Class FeynmanPathIntegral
                                              Optional a As Double = 1.0, 
                                              Optional xe As Double = 0.0) As Double
             Dim r As Double = x - xe
-            Return De * (1 - Math.Exp(-a * r)) ^ 2
+            Return De * (1 - Exp(-a * r)) ^ 2
         End Function
     End Class
 #End Region
@@ -540,7 +541,7 @@ Public Class FeynmanPathIntegral
             ' 路径统计
             If currentPaths IsNot Nothing AndAlso currentPaths.Count > 0 Then
                 Dim avgAction As Double = currentPaths.Average(Function(p) p.Action.Real)
-                Dim stdAction As Double = Math.Sqrt(currentPaths.Average(
+                Dim stdAction As Double = Sqrt(currentPaths.Average(
                     Function(p) (p.Action.Real - avgAction) ^ 2))
                 
                 txtResults.AppendText("路径统计：" & vbCrLf)
@@ -617,7 +618,7 @@ Public Class FeynmanPathIntegral
                     Color.FromArgb(100, 255, 0, 255)   ' 洋红色
                 }
                 
-                For pathIndex As Integer = 0 To Math.Min(4, sortedPaths.Count - 1)
+                For pathIndex As Integer = 0 To Min(4, sortedPaths.Count - 1)
                     Dim path = sortedPaths(pathIndex)
                     Dim penPath As New Pen(pathColors(pathIndex), 1)
                     
@@ -867,7 +868,7 @@ Public Class FeynmanPathIntegral
             If config.Potential(0) = 0 Then ' 自由粒子
                 Dim t As Double = config.TimeTotal
                 Dim analytical As Complex = Complex.Sqrt(
-                    New Complex(m / (2 * Math.PI * hbar * t), 0)) * 
+                    New Complex(m / (2 * PI * hbar * t), 0)) * 
                     Complex.Exp(Complex.ImaginaryOne * m * (x_f - x_i) * (x_f - x_i) / (2 * hbar * t))
                 Console.WriteLine(vbCrLf & $"解析解: K_analytical = {analytical.Real:E4} + {analytical.Imaginary:E4}i")
             End If
@@ -876,4 +877,5 @@ Public Class FeynmanPathIntegral
         End Sub
     End Module
 #End Region
+
 End Class
